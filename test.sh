@@ -29,6 +29,25 @@ assert 93 "(39-(4+18/2))+67"
 # 単項 + -
 assert 10 "-(-10)"
 assert 5 "+2+3"
+# 比較演算
+assert 1 "5 < 6"
+assert 0 "6 < 6"
+assert 0 "7 < 6"
+assert 1 "5 <= 6"
+assert 1 "6 <= 6"
+assert 0 "7 <= 6"
+assert 0 "5 > 6"
+assert 0 "6 > 6"
+assert 1 "7 > 6"
+assert 0 "5 >= 6"
+assert 1 "6 >= 6"
+assert 1 "7 >= 6"
+assert 0 "5 == 6"
+assert 1 "6 == 6"
+assert 0 "7 == 6"
+assert 1 "5 != 6"
+assert 0 "6 != 6"
+assert 1 "7 != 6"
 
 echo OK
 
