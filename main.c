@@ -9,9 +9,9 @@ int main(int argc, char **argv) {
     // トークナイズ
     token = tokenize(argv[1]);
     // パース
-    Node *node = expr();
+    parse();
     // コード生成
-    codegen(node);
+    codegen();
 
     return 0;
 }

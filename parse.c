@@ -1,5 +1,7 @@
 #include "9cc.h"
 
+Node *code[100];
+
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
@@ -15,8 +17,32 @@ Node *new_node_num(int val) {
     return node;
 }
 
+void parse() {
+    program();
+}
+
+void program() {
+    int i = 0;
+    while (!at_eof()) 
+        code[i++] = stmt();
+    code[i] = NULL;
+}
+
+Node *stmt() {
+    Node *node = expr();
+    expect(";");
+    return node;
+}
+
 Node *expr() {
-    return equality();
+    return assign();
+}
+
+Node *assign() {
+    Node *node = equality();
+    if (consume("="))
+        node = new_node(ND_ASSIGN, node, assign());
+    return node;
 }
 
 Node *equality() {
@@ -88,6 +114,15 @@ Node *primary() {
     if(consume("(")) {
         Node *node = expr();
         expect(")");
+        return node;
+    }
+
+    // 次のトークンがローカル変数の場合
+    Token *tok = consume_ident();
+    if (tok) {
+        Node *node = calloc(1, sizeof(Node));
+        node->kind = ND_LVAR;
+        node->offset = (tok->str[0] - 'a' + 1) * 8;
         return node;
     }
 

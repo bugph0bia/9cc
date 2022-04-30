@@ -41,13 +41,26 @@ bool consume(char *op) {
     return true;
 }
 
+// 次のトークンがローカル変数のときには、トークンを１つ読み進めて
+// 真を返す。それ以外の場合には偽を返す。
+Token *consume_ident() {
+    if (token->kind != TK_IDENT ||
+        token->len != 1 ||
+        token->str[0] < 'a' || 'z' < token->str[0])
+        return false;
+    Token *tok = token;
+    token = token->next;
+    return tok;
+}
+
+
 // 次のトークンが期待している記号のときには、トークンを１つ読み進める。
 // それ以外の場合にはエラーを報告する。
 void expect(char *op) {
     if (token->kind != TK_RESERVED ||
         strlen(op) != token->len ||
         memcmp(token->str, op, token->len))
-        error_at(token->str, "'%c'ではありません", op);
+        error_at(token->str, "\"%s\"ではありません", op);
     token = token->next;
 }
 
@@ -104,8 +117,14 @@ Token *tokenize(char *p) {
         }
 
         // 一文字の記号トークン
-        if (strchr("+-*/()<>", *p)) {
+        if (strchr("+-*/()<>;=", *p)) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
+            continue;
+        }
+
+        // ローカル変数
+        if ('a' <= *p && *p <= 'z') {
+            cur = new_token(TK_IDENT, cur, p++, 1);
             continue;
         }
 
